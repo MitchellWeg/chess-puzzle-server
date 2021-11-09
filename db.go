@@ -2,8 +2,12 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
+	"log"
+	"os"
 
 	_ "github.com/MonetDB/MonetDB-Go/src"
+	"github.com/joho/godotenv"
 )
 
 type Database struct {
@@ -23,7 +27,18 @@ type Puzzle struct {
 }
 
 func (d *Database) init() {
-	db, err := sql.Open("monetdb", "monetdb:monetdb@localhost:50000/demo")
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
+	username := os.Getenv("username")
+	password := os.Getenv("password")
+	host := os.Getenv("host")
+	port := os.Getenv("port")
+	database := os.Getenv("database")
+
+	db, err := sql.Open("monetdb", fmt.Sprintf("%s:%s@%s:%s/%s", username, password, host, port, database))
 
 	if err != nil {
 		panic(err)
